@@ -20,6 +20,8 @@ local need_update_after_horizontal_move = false
 ---@type string
 local date_format = vim.g.gitblame_date_format
 
+local show_virtual_text = vim.g.gitblame_virtual_text;
+
 ---@type boolean
 local date_format_has_relative_time
 
@@ -194,11 +196,14 @@ local function show_blame_info()
     elseif #files_data[filepath].blames > 0 then
         blame_text = '  Not Committed Yet'
     else
+        vim.api.nvim_buf_set_var(0, 'gitblame_status', '')
         return
     end
-
-    vim.api.nvim_buf_set_virtual_text(0, NAMESPACE_ID, line - 1,
-                                      {{blame_text, 'gitblame'}}, {})
+    if show_virtual_text == 1 then
+        vim.api.nvim_buf_set_virtual_text(0, NAMESPACE_ID, line - 1,
+                                          {{blame_text, 'gitblame'}}, {})
+    end
+    vim.api.nvim_buf_set_var(0, 'gitblame_status', blame_text)
 end
 
 local function cleanup_file_data()
